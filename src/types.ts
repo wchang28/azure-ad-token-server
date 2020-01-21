@@ -16,7 +16,7 @@ export interface ADTokenResponse {
     access_token: string;
     scope: string;
     refresh_token?: string;
-    expires_in: number; // second
+    expires_in: number; // in seconds
     id_token?: string;
 }
 
