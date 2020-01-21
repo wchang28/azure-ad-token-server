@@ -1,0 +1,26 @@
+{
+  "name": "azure-ad-token-server",
+  "version": "1.0.0",
+  "description": "Azure AD Token Server",
+  "scripts": {
+    "transpile": "tsc",
+    "start": "node ./dist/app.js",
+    "postinstall": "npm run transpile"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wchang28/azure-ad-token-server.git"
+  },
+  "author": "Wen Chang",
+  "license": "MIT",
+  "dependencies": {
+    "@types/express": "^4.17.2",
+    "@types/node": "^13.1.8",
+    "@types/superagent": "^4.1.4",
+    "alasql": "^0.5.3",
+    "express": "^4.17.1",
+    "periodic-polling": "git+https://github.com/wchang28/periodic-polling.git",
+    "superagent": "^5.2.1",
+    "typescript": "^3.7.5"
+  }
+}
