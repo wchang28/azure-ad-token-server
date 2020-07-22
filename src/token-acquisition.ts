@@ -59,6 +59,7 @@ export class AppTokenAcquisition {
             ,grant_type: "refresh_token"
             ,client_secret: this.client_secret
         });
+        //console.log(`refresh_token.response=\n${response.text}`);
         return JSON.parse(response.text) as types.ADTokenResponse;
     }
 }

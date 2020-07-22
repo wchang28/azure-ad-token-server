@@ -16,6 +16,7 @@ import {jsonEndware, resourceLoadingMiddleware} from "./middleware-utils";
 import * as jwtDecode from 'jwt-decode';
 
 const MINUTES_TO_TOKEN_EXPIRATION = 10;
+//const MINUTES_TO_TOKEN_EXPIRATION = 59;
 
 const port = ((process.env.PORT as any) as number) || 8080;
 const hostname = process.env.HOSTNAME || "127.0.0.1";
@@ -170,7 +171,7 @@ const appTokensRefresher = ip.Polling.get(async () => {
                 const appDef = appDefsMap[appKey];
                 const tokenAcq = new AppTokenAcquisition(appDef, app_redirect_url_cb);
                 const tokenResponse = await tokenAcq.refreshToken(refresh_token);
-                if (!tokenResponse || tokenResponse.refresh_token) {
+                if (!tokenResponse || !tokenResponse.refresh_token) {
                     throw `error refreshing access token for app ${app_name}`;
                 }
                 tokensStore.updateAppToken(tenant_id, client_id, tokenResponse);
