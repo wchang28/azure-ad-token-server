@@ -30,5 +30,6 @@ export interface App extends AppDef {
     redirect_url?: string;
     sign_in_url?: string;
     token_expired?: boolean;
+    token_expired_minutes?: number;
     has_valid_token?: boolean;
 }

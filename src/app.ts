@@ -101,11 +101,13 @@ async function extendApp(tokenAcquisition: AppTokenAcquisition, app: types.App) 
     const sign_in_url = await tokenAcquisition.getAppSignedInUrlForBrowser();
     const now = new Date();
     const token_expired = (app.token_expire_time ? now.getTime() >= new Date(app.token_expire_time).getTime() : null);
+    const token_expired_minutes = (app.token_expire_time ? (now.getTime() >= new Date(app.token_expire_time).getTime() ? Math.round((now.getTime() - new Date(app.token_expire_time).getTime())/(1000 * 60)) : null) : null);
     const hasToken = (app.token_type && app.access_token ? true : false);
     const has_valid_token = (token_expired == null ? false : token_expired ? false : hasToken);
     app.redirect_url = redirect_url;
     app.sign_in_url = sign_in_url;
     app.token_expired = token_expired;
+    app.token_expired_minutes = token_expired_minutes;
     app.has_valid_token = has_valid_token;
     return app;
 }
