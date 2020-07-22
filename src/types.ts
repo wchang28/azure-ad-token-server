@@ -32,4 +32,5 @@ export interface App extends AppDef {
     token_expired?: boolean;
     token_expired_minutes?: number;
     has_valid_token?: boolean;
+    token_claims?: any;
 }

@@ -13,6 +13,7 @@ import {AppTokenAcquisition} from "./token-acquisition";
 import {Extension} from "./req-ext";
 import * as http from "http";
 import {jsonEndware, resourceLoadingMiddleware} from "./middleware-utils";
+import * as jwtDecode from 'jwt-decode';
 
 const MINUTES_TO_TOKEN_EXPIRATION = 10;
 
@@ -109,6 +110,7 @@ async function extendApp(tokenAcquisition: AppTokenAcquisition, app: types.App) 
     app.token_expired = token_expired;
     app.token_expired_minutes = token_expired_minutes;
     app.has_valid_token = has_valid_token;
+    app.token_claims = (app.access_token ? jwtDecode(app.access_token) : null);
     return app;
 }
 
