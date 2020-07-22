@@ -171,7 +171,7 @@ const appTokensRefresher = ip.Polling.get(async () => {
                 const appDef = appDefsMap[appKey];
                 const tokenAcq = new AppTokenAcquisition(appDef, app_redirect_url_cb);
                 const tokenResponse = await tokenAcq.refreshToken(refresh_token);
-                if (!tokenResponse || !tokenResponse.refresh_token) {
+                if (!tokenResponse || !tokenResponse.access_token || !tokenResponse.refresh_token) {
                     throw `error refreshing access token for app ${app_name}`;
                 }
                 tokensStore.updateAppToken(tenant_id, client_id, tokenResponse);
