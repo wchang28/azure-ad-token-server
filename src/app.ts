@@ -1,4 +1,5 @@
-/* supports the follwoing env vars:
+/*
+supports the follwoing env. vars:
     APP_DEFS_FILE (required)
     EXTERNAL_HOST_URL (optional)
     PORT (optional)
