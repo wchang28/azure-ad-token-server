@@ -29,8 +29,8 @@ export class TokensStore {
     }
     getAppsThatNeedTokenRefresh() {
         const now = new Date();
-        const sqlQuery = "SELECT tenant_id, client_id, refresh_token FROM apps_store WHERE refresh_token IS NOT NULL AND token_expire_time IS NOT NULL AND ? < token_expire_time AND DIFF_SECOND(?, token_expire_time) < ?";
-        const result = alasql(sqlQuery, [now, now, this.minutesToTokenExpiration*60]) as {tenant_id: string, client_id: string, refresh_token: string}[];
+        const sqlQuery = "SELECT tenant_id, client_id, refresh_token, app_name FROM apps_store WHERE refresh_token IS NOT NULL AND token_expire_time IS NOT NULL AND ? < token_expire_time AND DIFF_SECOND(?, token_expire_time) < ?";
+        const result = alasql(sqlQuery, [now, now, this.minutesToTokenExpiration*60]) as {tenant_id: string, client_id: string, refresh_token: string, app_name: string}[];
         return result;     
     }
     getApp(tenant_id: string, client_id: string) {

@@ -2,7 +2,7 @@ import * as types from "./types";
 import * as request from "superagent";
 
 export class AppTokenAcquisition {
-    constructor(private appDef: types.AppDef, private redirect_url_cb: (tenant_id: string, client_id: string) => string) {
+    constructor(private appDef: {tenant_id: string, client_id: string, client_secret: string, api_resource: string}, private redirect_url_cb: (tenant_id: string, client_id: string) => string) {
     }
     private get tenant_id() {
         return this.appDef.tenant_id;

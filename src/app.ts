@@ -1,7 +1,7 @@
 import * as express from "express";
 import * as types from "./types";
 import * as fs from "fs";
-import * as pp from "periodic-polling";
+import * as ip from "interval-polling";
 import {TokensStore} from "./tokens-store";
 import {AppTokenAcquisition} from "./token-acquisition";
 import {Extension} from "./req-ext";
@@ -149,26 +149,36 @@ appObjRouter.get("/token", jsonEndware(async (req) => {
     return (app.has_valid_token ? {token_type: app.token_type, access_token: app.access_token} : null);
 }));
 
-const appTokensRefresher = pp.PeriodicPolling.get(async (pollInfo) => {
+const appTokensRefresher = ip.Polling.get(async () => {
     const apps = tokensStore.getAppsThatNeedTokenRefresh();
     if (apps.length > 0) {
         console.log(`[${new Date().toISOString()}]: ${apps.length} app(s) need to refresh their tokens`);
+        let appsUpdated = 0;
+        const ps = apps.map(async ({tenant_id, client_id, refresh_token, app_name}) => {
+            try {
+                const appKey = AppKey.get(tenant_id, client_id);
+                const appDef = appDefsMap[appKey];
+                const tokenAcq = new AppTokenAcquisition(appDef, redirect_url_cb);
+                const tokenResponse = await tokenAcq.refreshToken(refresh_token);
+                if (!tokenResponse || tokenResponse.refresh_token) {
+                    throw `error refreshing token for app ${app_name}`;
+                }
+                tokensStore.updateAppToken(tenant_id, client_id, tokenResponse);
+                appsUpdated++;
+            } catch(e) {
+                console.error(`[${new Date().toISOString()}]: ${e}`);
+            }
+        });
+        await Promise.all(ps);
+        if (apps.length === appsUpdated) {
+            console.log(`[${new Date().toISOString()}]: all token(s) refreshed successfully :)`);
+        } else {
+            console.error(`[${new Date().toISOString()}]: only ${appsUpdated} out of ${apps.length} app(s) got token refreshed :(`);
+        }
+    } else {
+        console.log(`[${new Date().toISOString()}]: no app needs to refresh the token`);
     }
-    const ps = apps.map(async (row) => {
-        const appKey = AppKey.get(row.tenant_id, row.client_id);
-        const appDef = appDefsMap[appKey];
-        const acq = new AppTokenAcquisition(appDef, redirect_url_cb);
-        const tokenResponse = await acq.refreshToken(row.refresh_token);
-        return {tenant_id: row.tenant_id, client_id: row.client_id, tokenResponse};
-    });
-    const responses = await Promise.all(ps);
-    responses.forEach((item) => {
-        tokensStore.updateAppToken(item.tenant_id, item.client_id, item.tokenResponse);
-    });
-    if (apps.length > 0) {
-        console.log(`[${new Date().toISOString()}]: token(s) refreshed successfully :)`);
-    }
-}, 5);
+}, 10);
 
 appTokensRefresher.start();
 
