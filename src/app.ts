@@ -184,7 +184,7 @@ const appTokensRefresher = ip.Polling.get(async () => {
     } else {
         console.log(`[${new Date().toISOString()}]: no app needs to refresh access token`);
     }
-}, 10);
+}, 30);
 
 appTokensRefresher.start();
 
