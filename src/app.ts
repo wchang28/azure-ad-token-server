@@ -37,20 +37,20 @@ console.log(`[${new Date().toISOString()}]: appDefs=\n${JSON.stringify(appDefs, 
 const app = express();
 
 app.use((req: express.Request, res: express.Response, next: express.NextFunction) => {
-	console.log('**********************************************************************');
-	console.log(`[${new Date().toISOString()}]: incoming ${req.method} request from ${req.connection.remoteAddress}, url=${req.url}, headers: ${JSON.stringify(req.headers)}`);
-	console.log('**********************************************************************');
-	console.log('');
-	next();
+    console.log('**********************************************************************');
+    console.log(`[${new Date().toISOString()}]: incoming ${req.method} request from ${req.connection.remoteAddress}, url=${req.url}, headers: ${JSON.stringify(req.headers)}`);
+    console.log('**********************************************************************');
+    console.log('');
+    next();
 });
 
 // no caching
 /////////////////////////////////////////////////////////////////////////////////////////////////
 app.use((req: express.Request, res: express.Response, next: express.NextFunction) => {
-	res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
-	res.header('Expires', '-1');
-	res.header('Pragma', 'no-cache');
-	next();
+    res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
+    res.header('Expires', '-1');
+    res.header('Pragma', 'no-cache');
+    next();
 });
 /////////////////////////////////////////////////////////////////////////////////////////////////
 
