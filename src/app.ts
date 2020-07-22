@@ -158,7 +158,7 @@ appObjRouter.get("/token", jsonEndware(async (req) => {
 const appTokensRefresher = ip.Polling.get(async () => {
     const apps = tokensStore.getAppsThatNeedTokenRefresh();
     if (apps.length > 0) {
-        console.log(`[${new Date().toISOString()}]: ${apps.length} app(s) need to refresh their tokens`);
+        console.log(`[${new Date().toISOString()}]: apps need to refresh access token: ${JSON.stringify(apps.map(({app_name}) => app_name))}`);
         const failedApps: string[] = [];
         const ps = apps.map(async ({tenant_id, client_id, refresh_token, app_name}) => {
             try {
@@ -167,7 +167,7 @@ const appTokensRefresher = ip.Polling.get(async () => {
                 const tokenAcq = new AppTokenAcquisition(appDef, app_redirect_url_cb);
                 const tokenResponse = await tokenAcq.refreshToken(refresh_token);
                 if (!tokenResponse || tokenResponse.refresh_token) {
-                    throw `error refreshing token for app ${app_name}`;
+                    throw `error refreshing access token for app ${app_name}`;
                 }
                 tokensStore.updateAppToken(tenant_id, client_id, tokenResponse);
             } catch(e) {
@@ -177,12 +177,12 @@ const appTokensRefresher = ip.Polling.get(async () => {
         });
         await Promise.all(ps);
         if (failedApps.length === 0) {
-            console.log(`[${new Date().toISOString()}]: all token(s) refreshed successfully :)`);
+            console.log(`[${new Date().toISOString()}]: all tokens refreshed successfully :)`);
         } else {
-            console.error(`[${new Date().toISOString()}]: app(s) failed to refresh token: ${JSON.stringify(failedApps)}`);
+            console.error(`[${new Date().toISOString()}]: apps failed to refresh access token: ${JSON.stringify(failedApps)}`);
         }
     } else {
-        console.log(`[${new Date().toISOString()}]: no app needs to refresh the token`);
+        console.log(`[${new Date().toISOString()}]: no app needs to refresh access token`);
     }
 }, 10);
 
