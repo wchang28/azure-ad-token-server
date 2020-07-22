@@ -159,7 +159,7 @@ const appTokensRefresher = ip.Polling.get(async () => {
     const apps = tokensStore.getAppsThatNeedTokenRefresh();
     if (apps.length > 0) {
         console.log(`[${new Date().toISOString()}]: ${apps.length} app(s) need to refresh their tokens`);
-        let appsUpdated = 0;
+        const failedApps: string[] = [];
         const ps = apps.map(async ({tenant_id, client_id, refresh_token, app_name}) => {
             try {
                 const appKey = AppKey.get(tenant_id, client_id);
@@ -170,16 +170,16 @@ const appTokensRefresher = ip.Polling.get(async () => {
                     throw `error refreshing token for app ${app_name}`;
                 }
                 tokensStore.updateAppToken(tenant_id, client_id, tokenResponse);
-                appsUpdated++;
             } catch(e) {
+                failedApps.push(app_name);
                 console.error(`[${new Date().toISOString()}]: ${e}`);
             }
         });
         await Promise.all(ps);
-        if (apps.length === appsUpdated) {
+        if (failedApps.length === 0) {
             console.log(`[${new Date().toISOString()}]: all token(s) refreshed successfully :)`);
         } else {
-            console.error(`[${new Date().toISOString()}]: only ${appsUpdated} out of ${apps.length} app(s) got token refreshed :(`);
+            console.error(`[${new Date().toISOString()}]: app(s) failed to refresh token: ${JSON.stringify(failedApps)}`);
         }
     } else {
         console.log(`[${new Date().toISOString()}]: no app needs to refresh the token`);
