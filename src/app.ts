@@ -1,3 +1,9 @@
+/* supports the follwoing env vars:
+    APP_DEFS_FILE (required)
+    EXTERNAL_HOST_URL (optional)
+    PORT (optional)
+    HOSTNAME (optional)
+*/
 import * as express from "express";
 import * as types from "./types";
 import * as fs from "fs";
@@ -76,7 +82,7 @@ appDefs.forEach((appDef) => {  // for each app
     tokensStore.initApp(appDef);
 });
 
-const redirect_url_cb = (tenant_id: string, client_id: string) => {
+const app_redirect_url_cb = (tenant_id: string, client_id: string) => {
     return `${EXTERNAL_BASE_URL}/app/${tenant_id}/${client_id}/auth`;
 };
 
@@ -110,7 +116,7 @@ app.use("/app", appRouter);
 appRouter.get("/", jsonEndware(async (req) => {
     const ps = appDefs.map((appDef) => {
         const app = req.extension.tokensStore.getApp(appDef.tenant_id, appDef.client_id);
-        return extendApp(new AppTokenAcquisition(appDef, redirect_url_cb), app);
+        return extendApp(new AppTokenAcquisition(appDef, app_redirect_url_cb), app);
     });
     const apps = await Promise.all(ps);
     return apps;
@@ -125,7 +131,7 @@ appRouter.use("/:tenant_id/:client_id"
     req.extension.app = req.extension.tokensStore.getApp(tenant_id, client_id);
     const appKey = AppKey.get(tenant_id, client_id);
     const appDef = appDefsMap[appKey];
-    req.extension.tokenAcquisition = new AppTokenAcquisition(appDef, redirect_url_cb);
+    req.extension.tokenAcquisition = new AppTokenAcquisition(appDef, app_redirect_url_cb);
 })
 ,appObjRouter);
 
@@ -158,7 +164,7 @@ const appTokensRefresher = ip.Polling.get(async () => {
             try {
                 const appKey = AppKey.get(tenant_id, client_id);
                 const appDef = appDefsMap[appKey];
-                const tokenAcq = new AppTokenAcquisition(appDef, redirect_url_cb);
+                const tokenAcq = new AppTokenAcquisition(appDef, app_redirect_url_cb);
                 const tokenResponse = await tokenAcq.refreshToken(refresh_token);
                 if (!tokenResponse || tokenResponse.refresh_token) {
                     throw `error refreshing token for app ${app_name}`;
