@@ -31,6 +31,8 @@ export class AppTokenAcquisition {
         url += "&" + `redirect_uri=${this.redirect_url}`;
         url += "&" + "response_mode=query";
         url += "&" + `scope=${this.scope}`;
+        //url += "&" + `prompt=consent`;
+        url += "&" + `prompt=login`;
         url = encodeURI(url);
         return url;
     }
