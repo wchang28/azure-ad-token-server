@@ -19,7 +19,7 @@
     "@types/node": "^14.0.24",
     "@types/superagent": "^4.1.8",
     "alasql": "^0.6.3",
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "interval-polling": "git+https://github.com/wchang28/interval-polling.git",
     "jwt-decode": "^2.2.0",
     "superagent": "^5.3.1",
