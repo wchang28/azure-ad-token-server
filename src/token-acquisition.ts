@@ -35,7 +35,7 @@ export class AppTokenAcquisition {
         url += "&" + `redirect_uri=${this.redirect_url}`;
         url += "&" + "response_mode=query";
         url += "&" + `scope=${this.scope}`;
-        //url += "&" + `prompt=consent`;
+        url += "&" + `prompt=login`;	// login: Forces the user to re-enter credentials, even if they have an active session.
         url = encodeURI(url);
         return url;
     }
