@@ -14,7 +14,11 @@ export class AppTokenAcquisition {
         return this.appDef.client_secret;
     }
     private get scope() {
-        return `offline_access ${this.appDef.api_resource}/.default`;
+		// openid: Required for OIDC. Requests an ID token and includes the sub claim (subject identifier).
+		// profile: Includes basic profile information such as name, family_name, given_name, preferred_username in the claim.
+		// email: Includes the user's email address (email claim).
+		// offline_access: (Microsoft-specific) Requests a refresh token so your app can get new tokens without user interaction.
+        return `openid profile email offline_access ${this.appDef.api_resource}/.default`;
     }
     public get redirect_url() {
         return this.redirect_url_cb(this.tenant_id, this.client_id);
